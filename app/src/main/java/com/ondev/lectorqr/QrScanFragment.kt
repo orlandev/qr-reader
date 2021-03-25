@@ -5,6 +5,7 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
@@ -23,17 +24,17 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.common.util.concurrent.ListenableFuture
+import com.google.mlkit.vision.barcode.BarcodeScanner
+import com.google.mlkit.vision.common.InputImage
+import com.ondev.lectorqr.databinding.FragmentQrScanBinding
 import com.ondev.lectorqr.utilities.buildBarcodeScanner
 import com.ondev.lectorqr.utilities.getBarcodeReticleBox
 import com.ondev.lectorqr.views.BarcodeLoadingGraphic
 import com.ondev.lectorqr.views.BarcodeReticleGraphic
 import com.ondev.lectorqr.views.CameraReticleAnimator
 import com.ondev.lectorqr.views.GraphicOverlay
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.common.util.concurrent.ListenableFuture
-import com.google.mlkit.vision.barcode.BarcodeScanner
-import com.google.mlkit.vision.common.InputImage
-import com.ondev.lectorqr.databinding.FragmentQrScanBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -74,7 +75,8 @@ class QrScanFragment : Fragment() {
         itemTitle = binding.itemTitle
         itemImage = binding.circleImage
         itemDescription = binding.itemDescription
-        binding.seeMoreButton.setOnClickListener {
+        itemDescription.movementMethod = ScrollingMovementMethod();
+        binding.copyButton.setOnClickListener {
             findNavController().navigate(direction)
         }
         return binding.root
