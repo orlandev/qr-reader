@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#400000</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="gray_base">#666666</color>
+    <color name="yellow_checked">#dbcba7</color>
+    <color name="yellow_unchecked">#e4e5ee</color>
+    <color name="gold">#FFFFFF</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="reticle_ripple">#900000</color>
+    <color name="barcode_reticle_background">#99000000</color>
+    <color name="barcode_reticle_stroke">#40000000</color>
+    <color name="funeral_yellow_gradient_start">#dbcba7</color>
+    <color name="funeral_gray">#fbfbfb</color>
+    <color name="funeral_gray_light_">#f9f9f9</color>
+    <color name="funeral_gray_dark">#d5d8e5</color>
+    <color name="funeral_titles_text">#4D4D4D</color>
+    <color name="funeral_subtitles_text">#4D4D4D</color>
+    <color name="funeral_dark">#666666</color>
+    <color name="funeral_menu_inactive_state">#E4E5EE</color>
+    <color name="funeral_menu_active_state">#dbcba7</color>
+    <color name="funeral_slider_active_state">#666666</color>
+    <color name="funeral_slider_inactive_state">#B3B3B3</color>
+</resources>
