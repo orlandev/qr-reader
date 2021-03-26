@@ -3,6 +3,9 @@ package com.ondev.lectorqr
 import android.Manifest
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
@@ -10,8 +13,8 @@ import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
@@ -22,7 +25,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.common.util.concurrent.ListenableFuture
@@ -38,6 +40,7 @@ import com.ondev.lectorqr.views.GraphicOverlay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+
 class QrScanFragment : Fragment() {
     private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
     private lateinit var barcodeScanner: BarcodeScanner
@@ -47,9 +50,7 @@ class QrScanFragment : Fragment() {
     private val permissionCode = 1234
     private lateinit var bottomSheet: BottomSheetBehavior<ConstraintLayout>
     private lateinit var itemTitle: TextView
-    private lateinit var itemImage: ImageView
     private lateinit var itemDescription: TextView
-    private lateinit var direction: NavDirections
     private var cameraInitialized = false
 
 
@@ -73,11 +74,15 @@ class QrScanFragment : Fragment() {
             }
         })
         itemTitle = binding.itemTitle
-        itemImage = binding.circleImage
         itemDescription = binding.itemDescription
         itemDescription.movementMethod = ScrollingMovementMethod();
+
         binding.copyButton.setOnClickListener {
-            findNavController().navigate(direction)
+            val clipboard =
+                requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+            val clip = ClipData.newPlainText("Información", binding.itemDescription.text.toString())
+            clipboard!!.setPrimaryClip(clip)
+            Toast.makeText(requireContext(), "Copiado al portapapeles", Toast.LENGTH_LONG).show()
         }
         return binding.root
     }
@@ -239,7 +244,7 @@ class QrScanFragment : Fragment() {
                     graphicOverlay.clear()
                     lifecycleScope.launch(Dispatchers.IO) {
                         launch(Dispatchers.Main) {
-                            itemTitle.text = "Dato"
+                            itemTitle.text = "Contenido de este QR"
                             itemDescription.text = readied
                             bottomSheet.state = BottomSheetBehavior.STATE_EXPANDED
                         }
