@@ -6,8 +6,12 @@ import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.method.ScrollingMovementMethod
 import android.util.Size
 import android.view.LayoutInflater
@@ -21,6 +25,7 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
@@ -84,6 +89,13 @@ class QrScanFragment : Fragment() {
             clipboard!!.setPrimaryClip(clip)
             Toast.makeText(requireContext(), "Copiado al portapapeles", Toast.LENGTH_LONG).show()
         }
+
+        binding.imgAppShare.setOnClickListener(View.OnClickListener {
+
+            ShareApp()
+
+        })
+
         return binding.root
     }
 
@@ -260,6 +272,42 @@ class QrScanFragment : Fragment() {
         super.onStop()
         if (cameraInitialized) {
             cameraProvider.unbindAll()
+        }
+    }
+
+    fun ShareApp() {
+
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            val bm = BitmapFactory.decodeResource(
+                resources,
+                R.drawable.ic_share
+            )
+            val intent = Intent(Intent.ACTION_SEND_MULTIPLE)
+            intent.putExtra(
+                Intent.EXTRA_TEXT,
+                "https://www.apklis.cu/application/com.ondev.lectorqr Estoy usando esta app para leer codigos QR, me gusta y la quiero compartir "
+            )
+            val path =
+                MediaStore.Images.Media.insertImage(requireContext().contentResolver, bm, "", null)
+            val screenshotUri: Uri = Uri.parse(path)
+            intent.putExtra(Intent.EXTRA_STREAM, screenshotUri)
+            intent.type = "image/*"
+            requireActivity().startActivity(
+                Intent.createChooser(
+                    intent,
+                    "Compartir"
+                )
+            )
+        } else {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                1
+            )
         }
     }
 }
