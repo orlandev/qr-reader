@@ -19,10 +19,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.camera.core.AspectRatio
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.Preview
+import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
@@ -47,6 +44,7 @@ import kotlinx.coroutines.launch
 
 
 class QrScanFragment : Fragment() {
+
     private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
     private lateinit var barcodeScanner: BarcodeScanner
     private lateinit var cameraProvider: ProcessCameraProvider
@@ -57,7 +55,9 @@ class QrScanFragment : Fragment() {
     private lateinit var itemTitle: TextView
     private lateinit var itemDescription: TextView
     private var cameraInitialized = false
+    private lateinit var cameraSelector: CameraSelector
 
+    private lateinit var camera: Camera
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -96,7 +96,26 @@ class QrScanFragment : Fragment() {
 
         })
 
+        binding.flashButton.setOnClickListener(View.OnClickListener {
+            it?.let {
+                if (it.isSelected) {
+                    it.isSelected = false
+                    torchProcess(false)
+                } else {
+                    it.isSelected = true
+                    torchProcess(true)
+                }
+            }
+        })
+
         return binding.root
+    }
+
+
+    private fun torchProcess(torchOn: Boolean) {
+        if (camera.cameraInfo.hasFlashUnit()) {
+            camera.cameraControl.enableTorch(torchOn)
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -149,14 +168,14 @@ class QrScanFragment : Fragment() {
 
     @SuppressLint("UnsafeExperimentalUsageError")
     private fun bindCamera(cameraProvider: ProcessCameraProvider) {
-        val cameraSelector: CameraSelector = CameraSelector.Builder()
+        cameraSelector = CameraSelector.Builder()
             .requireLensFacing(CameraSelector.LENS_FACING_BACK)
             .build()
 
         val preview = buildPreview()
         val imageAnalysis = buildImageAnalysis()
 
-        cameraProvider.bindToLifecycle(
+        camera = cameraProvider.bindToLifecycle(
             this as LifecycleOwner,
             cameraSelector,
             imageAnalysis,
